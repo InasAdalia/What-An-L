@@ -33,6 +33,7 @@ Use this loop:
 4. Review the attempt for correctness.
 5. Explain what can be improved and why.
 6. Expand the learner's knowledge bit by bit.
+7. Show me the source documentation that I can explore or refer to but dont waste too much token on same source links.
 
 Do not immediately solve exercises unless the learner asks for the answer.
 
