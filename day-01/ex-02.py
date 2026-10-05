@@ -4,6 +4,7 @@
 # 4. compress older turns into a short running summary, ✅
 # 5. save that summary to a local file so it can be loaded again after restarting the script.
 import sys
+import markdown
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -49,7 +50,7 @@ while True:
 
         # 2. summarize
         summary_prompt = ChatPromptTemplate([
-            ("system", "You are a note-taker, you never talk to the student.Summarize this conversation in bullet points. Do not answer or address the student or question. Return only these four lines: Name, Goal/topic, Preferred style, Conversation summary. Use Unknown for missing profile details."),
+            ("system", "You are a note-taker, you never talk to the student. Summarize this conversation in bullet points. Do not answer or address the student or question. Return only these four lines: Name, Goal/topic, Preferred style, Conversation summary. Use Unknown for missing profile details."),
             HumanMessage(content=f"previous summary: {summary}\n Previous chat transcript: {transcript}\n Write the updated summary: "),
         ])
 
@@ -57,6 +58,10 @@ while True:
             "summary": summary or "none yet",
             "transcript": transcript or "none yet",
         })
+
+        # 3. save summary to file
+        with open("day-01/exercise-02-summary.md", "w", encoding="utf-8") as file:
+            file.write(summary)
 
         print(f"{GREEN}\n[debug] SUMMARY: \n{summary} {RESET}\n")
 
