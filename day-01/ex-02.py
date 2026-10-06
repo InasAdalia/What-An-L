@@ -38,13 +38,14 @@ while True:
     ])
     chain = prompt | llm | parser
 
-    # result = chain.invoke({
-    #     "name": "",
-    # })
+    result = chain.invoke({
+        "name": "",
+    })
     
-    # history.append(AIMessage(result))
-
-    history.append("AI Response")
+    history.append(AIMessage(result))
+    
+    # [debug]
+    # history.append("AI Response")
 
     if (len(history) > MAX_HISTORY): # summarize the first 4 messages and trim off history
         
@@ -52,20 +53,23 @@ while True:
         os.system('cls' if os.name == 'nt' else 'clear') 
 
         trimmed_history = history[:KEEP_RECENT+1]
-        # transcript = "\n".join([f"{h.type}: {h.content}" for h in trimmed_history])
+        transcript = "\n".join([f"{h.type}: {h.content}" for h in trimmed_history])
 
-        # # 2. summarize
-        # summary_prompt = ChatPromptTemplate([
-        #     ("system", "You are a note-taker, you never talk to the student. Summarize this conversation in bullet points. Do not answer or address the student or question. Return only these four lines: Name, Goal/topic, Preferred style, Conversation summary. Use Unknown for missing profile details."),
-        #     HumanMessage(content=f"previous summary: {summary}\n Previous chat transcript: {transcript}\n Write the updated summary: "),
-        # ])
+        # 2. summarize
+        summary_prompt = ChatPromptTemplate([
+            ("system", "You are a note-taker, you never talk to the student. Summarize this conversation in bullet points. Do not answer or address the student or question. Return only these four lines: Name, Goal/topic, Preferred style, Conversation summary. Use Unknown for missing profile details."),
+            HumanMessage(content=f"previous summary: {summary}\n Previous chat transcript: {transcript}\n Write the updated summary: "),
+        ])
 
-        # summary = (summary_prompt | llm | parser).invoke({
-        #     "summary": summary or "none yet",
-        #     "transcript": transcript or "none yet",
-        # })
-        sum_count += 1
-        summary = f"summary invoked: {sum_count} history: {trimmed_history}\n\n"
+        summary = (summary_prompt | llm | parser).invoke({
+            "summary": summary or "none yet",
+            "transcript": transcript or "none yet",
+        })
+        
+        # [debug]
+        # sum_count += 1
+        # summary = f"summary invoked: {sum_count} history: {trimmed_history}\n\n"
+        
         # 3. save summary to file
         with open("day-01/exercise-02-summary.md", "w", encoding="utf-8") as file:
             file.write(summary)
@@ -74,16 +78,18 @@ while True:
 
         # 3. KEEP LAST 4 MESSAGES. lenh(history) will be reduced
         history = history[-KEEP_RECENT:]
-        print(f"{GREEN}\n[debug] KEEP RECENT: \n{history} {RESET}\n")
+        # print(f"{GREEN}\n[debug] KEEP RECENT: \n{history} {RESET}\n")
 
         for (h) in history:
-            # print(f"{h.type}: {h.content}")
-            print(h)
+            print(f"{h.type}: {h.content}")
+            # [debug]
+            # print(h)
 
 
     else: # print last element
-        # print(f"{history[-1].type}: {history[-1].content}")
-        print(history[-1])
+        print(f"{history[-1].type}: {history[-1].content}")
+        # [debug]
+        # print(history[-1])
 
     # print only the last 4 message index
     print(f"[debug] iteration : {iteration}")
@@ -93,13 +99,17 @@ while True:
     # a or b or c is eq. to a || b || c in JS.
     if (human_input in ("quit","exit","X")) : 
         break
-    history.append(f"human input {human_input}")
-    # history.append(HumanMessage(human_input))
+
+    history.append(HumanMessage(human_input))
+    
+    # [debug]
+    # history.append(f"human input {human_input}")
 
     # [debug] to check history contents passed into prompt
     # print(f"{RED}\n[debug]HISTORY: \n")
-    # for (index, h) in enumerate(history, start=1):
-    #     print(f"{RED}\n{index}. {h.type}: {h.content} {RESET}\n")
+    
+    for (index, h) in enumerate(history, start=1):
+        print(f"{RED}\n{index}. {h.type}: {h.content} {RESET}\n")
 
     iteration+=1
 
