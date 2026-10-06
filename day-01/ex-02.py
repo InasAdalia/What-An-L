@@ -52,7 +52,7 @@ while True:
         # 1. clear terminal
         os.system('cls' if os.name == 'nt' else 'clear') 
 
-        trimmed_history = history[:KEEP_RECENT+1]
+        trimmed_history = history[:-KEEP_RECENT]
         transcript = "\n".join([f"{h.type}: {h.content}" for h in trimmed_history])
 
         # 2. summarize
