@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from utils import RED, GREEN, RESET
+from utils import RED, GREEN, BLUE, RESET
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -81,13 +81,13 @@ while True:
         # print(f"{GREEN}\n[debug] KEEP RECENT: \n{history} {RESET}\n")
 
         for (h) in history:
-            print(f"{h.type}: {h.content}")
+            print(f"{BLUE if h.type == 'ai' else ''} \n{h.type}: {h.content} \n{RESET}")
             # [debug]
             # print(h)
 
 
     else: # print last element
-        print(f"{history[-1].type}: {history[-1].content}")
+        print(f"{BLUE if history[-1].type == 'ai' else ''} \n{history[-1].type}: {history[-1].content} \n{RESET}")
         # [debug]
         # print(history[-1])
 
@@ -107,9 +107,8 @@ while True:
 
     # [debug] to check history contents passed into prompt
     # print(f"{RED}\n[debug]HISTORY: \n")
-    
-    for (index, h) in enumerate(history, start=1):
-        print(f"{RED}\n{index}. {h.type}: {h.content} {RESET}\n")
+    # for (index, h) in enumerate(history, start=1):
+    #     print(f"{RED}\n{index}. {h.type}: {h.content} {RESET}\n")
 
     iteration+=1
 
