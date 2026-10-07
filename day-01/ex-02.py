@@ -11,18 +11,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from utils import RED, GREEN, BLUE, RESET
 from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, trim_messages
+from langchain_core.messages.utils import count_tokens_approximately
 from langchain_core.output_parsers import StrOutputParser
 import os
 
 
-llm = ChatOllama(
+main_model = ChatOllama(
+    model="llama3.2:3b",
+)
+summarizer_model = ChatOllama(
     model="llama3.2:3b",
 )
 
-MAX_HISTORY = 8
-KEEP_RECENT = 4
+MAX_TOKENS = 500
 parser = StrOutputParser()
 history = []
 summary = ""
@@ -31,29 +34,33 @@ iteration = 1
 system_prompt = "You are a teacher that mentors the user as a student. Begin by asking for the student's name, topic of interest, and preferred explanation style. Always mention their name in every conversation."
 
 while True:
-    prompt = ChatPromptTemplate([
-        ("system", system_prompt),
-        SystemMessage(content=summary),
-        *history,
-    ])
-    chain = prompt | llm | parser
 
-    result = chain.invoke({
-        "name": "",
-    })
-    
-    history.append(AIMessage(result))
-    
-    # [debug]
-    # history.append("AI Response")
+    # restart
+    removed_history=[]
+    reprint_history = False
 
-    if (len(history) > MAX_HISTORY): # summarize the first 4 messages and trim off history
+    # trim kept history
+    kept_history = trim_messages(
+        history,
+        max_tokens = MAX_TOKENS,
+        token_counter = count_tokens_approximately,
+        strategy = "last",
+        start_on="human",
+        allow_partial = False
+    )
+
+    # get the removed history
+    removed_history = history[:len(history) - len(kept_history)]
+    
+    print(f"[debug]: removed history: {removed_history}")
+
+    if (len(removed_history) != 0):
+
+        reprint_history = True
+        history = kept_history
+
+        transcript = "\n".join([f"{h.type}: {h.content}" for h in removed_history]) # for summary to consume
         
-        # 1. clear terminal
-        os.system('cls' if os.name == 'nt' else 'clear') 
-
-        trimmed_history = history[:-KEEP_RECENT]
-        transcript = "\n".join([f"{h.type}: {h.content}" for h in trimmed_history])
 
         # 2. summarize
         summary_prompt = ChatPromptTemplate([
@@ -61,50 +68,57 @@ while True:
             HumanMessage(content=f"previous summary: {summary}\n Previous chat transcript: {transcript}\n Write the updated summary: "),
         ])
 
-        summary = (summary_prompt | llm | parser).invoke({
+        summary = (summary_prompt | summarizer_model | parser).invoke({
             "summary": summary or "none yet",
             "transcript": transcript or "none yet",
         })
-        
-        # [debug]
-        # sum_count += 1
-        # summary = f"summary invoked: {sum_count} history: {trimmed_history}\n\n"
-        
+
         # 3. save summary to file
         with open("day-01/exercise-02-summary.md", "w", encoding="utf-8") as file:
             file.write(summary)
 
+        os.system('cls' if os.name == 'nt' else 'clear') 
+
         print(f"{GREEN}\n[debug] SUMMARY: \n{summary} {RESET}\n")
 
-        # 3. KEEP LAST 4 MESSAGES. lenh(history) will be reduced
-        history = history[-KEEP_RECENT:]
-        # print(f"{GREEN}\n[debug] KEEP RECENT: \n{history} {RESET}\n")
+        # print chat history
+    # else:
+    #     # print 
 
+    # invoke
+    prompt = ChatPromptTemplate([
+        ("system", system_prompt),
+        SystemMessage(content=summary),
+        MessagesPlaceholder("history"),
+    ])
+
+    chain = prompt | main_model | parser
+
+    result = chain.invoke({"history" : history })
+    history.append(AIMessage(result))
+
+    # debug tokens
+    print(f"[debug] kept ~{count_tokens_approximately(kept_history)} / {MAX_TOKENS} tokens, "
+      f"removed {len(removed_history)} msgs")
+
+    # print history
+    if (reprint_history):
         for (h) in history:
             print(f"{BLUE if h.type == 'ai' else ''} \n{h.type}: {h.content} \n{RESET}")
-            # [debug]
-            # print(h)
 
-
-    else: # print last element
+    else:
         print(f"{BLUE if history[-1].type == 'ai' else ''} \n{history[-1].type}: {history[-1].content} \n{RESET}")
-        # [debug]
-        # print(history[-1])
 
-    # print only the last 4 message index
-    print(f"[debug] iteration : {iteration}")
-
+    # human input always follows after AI response
     human_input = input("You :")
-
     # a or b or c is eq. to a || b || c in JS.
     if (human_input in ("quit","exit","X")) : 
         break
 
     history.append(HumanMessage(human_input))
-    
-    # [debug]
-    # history.append(f"human input {human_input}")
 
+    
+    print(f"[debug] iteration : {iteration}")
     # [debug] to check history contents passed into prompt
     # print(f"{RED}\n[debug]HISTORY: \n")
     # for (index, h) in enumerate(history, start=1):
