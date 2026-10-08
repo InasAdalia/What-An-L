@@ -32,7 +32,7 @@
 - [LangChain Docs — Memory / Chat History](https://python.langchain.com/docs/concepts/chat_history/)
 - [Ollama model library](https://ollama.com/library)
 
-Work folder: `day-01/`
+Work folder: `lc-01/`
 
 ---
 
@@ -54,7 +54,7 @@ Work folder: `day-01/`
 - [LangChain Docs — Vector Stores](https://python.langchain.com/docs/concepts/vectorstores/)
 - [FAISS](https://faiss.ai/)
 
-Work folder: `day-03/`
+Work folder: `lc-03/`
 
 ---
 
@@ -74,7 +74,7 @@ Work folder: `day-03/`
 - [LangChain Docs — Output Parsers](https://python.langchain.com/docs/concepts/output_parsers/)
 - [Pydantic docs (v2)](https://docs.pydantic.dev/latest/)
 
-Work folder: `day-05/`
+Work folder: `lc-05/`
 
 ---
 
@@ -95,7 +95,7 @@ Work folder: `day-05/`
 - [LangChain Docs — Elasticsearch integration](https://python.langchain.com/docs/integrations/vectorstores/elasticsearch/)
 - [Elasticsearch kNN search](https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html)
 
-Work folder: `day-07/`
+Work folder: `lc-07/`
 
 ---
 
@@ -115,7 +115,7 @@ Work folder: `day-07/`
 - [LangGraph Docs — Get Started](https://langchain-ai.github.io/langgraph/tutorials/introduction/)
 - [LangChain Academy — LangGraph course (free)](https://academy.langchain.com/courses/intro-to-langgraph)
 
-Work folder: `day-09/`
+Work folder: `lc-09/`
 
 ---
 

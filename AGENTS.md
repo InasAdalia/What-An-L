@@ -85,7 +85,7 @@ When reviewing the learner's attempt:
 
 ## Repository workflow
 
-- Keep learning work organized by roadmap folders: LangChain days in `day-01/`, `day-03/`, `day-05/`, `day-07/`, `day-09/`; agent engineering modules in `ae-01/` … `ae-10/`.
+- Keep learning work organized by roadmap folders: LangChain days in `lc-01/`, `lc-03/`, `lc-05/`, `lc-07/`, `lc-09/`; agent engineering modules in `ae-01/` … `ae-10/`.
 - The roadmap says all personal work should live in `_personal/`; respect that if adding learner-specific experiments.
 - Always tag or cite learning resources when adding new learning material, so the learner can refer back while developing.
 - Do not add unnecessary dependencies.

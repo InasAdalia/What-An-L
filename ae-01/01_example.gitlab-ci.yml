@@ -1,0 +1,73 @@
+# Example 01 — An annotated GitLab CI pipeline for an agent project
+#
+# [CI] GitLab only reads a file named `.gitlab-ci.yml` at the ROOT of the repo.
+#      This file lives in ae-01/ with a different name on purpose, so it is NOT this repo's real pipeline.
+#      Run it locally with:   python ae-01/02_mini_runner.py ae-01/01_example.gitlab-ci.yml
+#
+# [CI] Docs — Get started:        https://docs.gitlab.com/ci/
+# [CI] Docs — Keyword reference:  https://docs.gitlab.com/ci/yaml/
+#
+# [YAML] Quick syntax (compare to JSON):
+#   key: value          → {"key": "value"}
+#   - item              → an array element
+#   indentation (2 spaces) = nesting, like Python. Tabs are NOT allowed.
+#   # comment           → YAML has comments, JSON doesn't.
+
+# ── 1. Stages ────────────────────────────────────────────────
+# [CI] Stages run IN ORDER. All jobs in one stage must pass before the next stage starts.
+#      Jobs inside the same stage run IN PARALLEL on GitLab (the mini runner runs them one by one).
+#      If any job fails, later stages are skipped → the merge request shows a red pipeline.
+stages:
+  - lint
+  - test
+  - eval
+
+# ── 2. Variables ─────────────────────────────────────────────
+# [CI] Non-secret config only. Visible to anyone who can read the repo.
+#      Secrets (tokens, passwords) go in GitLab → Settings → CI/CD → Variables, NEVER here.
+#      Inside `script:` you read them like shell env vars: $SAMPLE_DIR  (≈ process.env.SAMPLE_DIR)
+variables:
+  SAMPLE_DIR: "ae-01/sample_project"
+  EVAL_THRESHOLD: "0.8"
+
+# ── 3. Defaults for every job ────────────────────────────────
+# [CI] `image` = the Docker container each job runs in. A fresh, clean machine every time,
+#      so "works on my machine" problems show up here. (Mini runner uses your .venv instead.)
+# [CI] `before_script` runs before every job's `script` (setup like `pip install -r requirements.txt`).
+default:
+  image: python:3.11-slim
+  before_script:
+    - python --version
+
+# ── 4. Jobs ──────────────────────────────────────────────────
+# [CI] Every top-level key that isn't a reserved keyword (stages, variables, default, ...) is a JOB.
+#      A job = name + stage + script. Pass/fail = the exit code of each script line.
+
+lint:
+  stage: lint
+  script:
+    # compileall catches syntax errors without running the code.
+    # Real projects use `ruff check .` here (a linter, like ESLint for Python).
+    - python -m compileall -q "$SAMPLE_DIR"
+
+unit-test:
+  stage: test
+  script:
+    - python -m unittest discover -s "$SAMPLE_DIR" -p "test_*.py" -v
+
+eval-gate:
+  stage: eval
+  script:
+    - python "$SAMPLE_DIR/eval_gate.py"
+  # [CI] Artifacts = files kept after the job finishes, downloadable from the pipeline/MR page.
+  #      `when: always` keeps the report even if the gate fails (that's when you need it most).
+  artifacts:
+    when: always
+    paths:
+      - ae-01/sample_project/eval_report.json
+  # [CI] `rules` decide IF a job is added to the pipeline. First matching rule wins.
+  #      No rule matches → job doesn't run.
+  #      Evals can be slow/expensive (real LLM calls), so only run them on MRs and on main.
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
