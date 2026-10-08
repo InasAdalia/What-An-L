@@ -35,7 +35,7 @@ variables:
 #      so "works on my machine" problems show up here. (Mini runner uses your .venv instead.)
 # [CI] `before_script` runs before every job's `script` (setup like `pip install -r requirements.txt`).
 default:
-  image: python:3.11-slim
+  image: python:3.11-slim # in our case we often use images provided by company.
   before_script:
     - python --version
 
@@ -43,19 +43,19 @@ default:
 # [CI] Every top-level key that isn't a reserved keyword (stages, variables, default, ...) is a JOB.
 #      A job = name + stage + script. Pass/fail = the exit code of each script line.
 
-lint:
+lint: # is this only for python. in my java project i didnt have to do this pon
   stage: lint
   script:
     # compileall catches syntax errors without running the code.
     # Real projects use `ruff check .` here (a linter, like ESLint for Python).
     - python -m compileall -q "$SAMPLE_DIR"
 
-unit-test:
+unit-test: 
   stage: test
   script:
     - python -m unittest discover -s "$SAMPLE_DIR" -p "test_*.py" -v
 
-eval-gate:
+eval-gate: # is this part of our ai eng step or is this any python project
   stage: eval
   script:
     - python "$SAMPLE_DIR/eval_gate.py"
@@ -69,5 +69,5 @@ eval-gate:
   #      No rule matches → job doesn't run.
   #      Evals can be slow/expensive (real LLM calls), so only run them on MRs and on main.
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # run this pipeline upon MRs only
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
