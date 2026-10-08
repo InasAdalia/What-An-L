@@ -34,18 +34,18 @@ Create Context → Publish & Connect Context in UC → Build Agent → Quality �
 
 ## Combined Timeline (both roadmaps interleaved)
 
-Progress so far: **LC Day 1 done** (chatbot with memory, trimming + summary, `day-01/ex-02.py`).
+Progress so far: **LC Day 1 done** (chatbot with memory, trimming + summary, `lc-01/ex-02.py`).
 
 | Global day | Roadmap | Topic | Work folder |
 |---|---|---|---|
-| 1–2 | LC Day 1–2 | LangChain foundation (in progress, finish Day 2 mini project) | `day-01/` |
+| 1–2 | LC Day 1–2 | LangChain foundation (in progress, finish Day 2 mini project) | `lc-01/` |
 | 3 | AE-00 + AE-01 | Big picture + GitLab repo/CI workflow | `ae-01/` |
-| 4–5 | LC Day 3–4 | RAG indexing (loaders, splitters, embeddings, FAISS) | `day-03/` |
+| 4–5 | LC Day 3–4 | RAG indexing (loaders, splitters, embeddings, FAISS) | `lc-03/` |
 | 6 | AE-02 | Create Context the enterprise way (medallion pipeline) | `ae-02/` |
-| 7–8 | LC Day 5–6 | Retrieval chain + structured output | `day-05/` |
+| 7–8 | LC Day 5–6 | Retrieval chain + structured output | `lc-05/` |
 | 9 | AE-03 | Publish & Connect Context in Unity Catalog | `ae-03/` |
-| 10–11 | LC Day 7–8 | Elasticsearch (BM25, kNN, hybrid) — *compressible to 1 day if team is Databricks Vector Search only* | `day-07/` |
-| 12–13 | LC Day 9–10 | Tools, ReAct, LangGraph, human-in-the-loop | `day-09/` |
+| 10–11 | LC Day 7–8 | Elasticsearch (BM25, kNN, hybrid) — *compressible to 1 day if team is Databricks Vector Search only* | `lc-07/` |
+| 12–13 | LC Day 9–10 | Tools, ReAct, LangGraph, human-in-the-loop | `lc-09/` |
 | 14 | AE-04 | Tools at enterprise scale + MCP | `ae-04/` |
 | 15 | AE-05 | Build Agent the enterprise way (Databricks Agent Bricks mental model) | `ae-05/` |
 | 16 | AE-06 | Multi-agent patterns (supervisor, handoff) in one process | `ae-06/` |
